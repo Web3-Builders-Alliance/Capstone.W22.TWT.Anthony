@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExecuteMsg",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "deposit"
+      ],
+      "properties": {
+        "deposit": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "withdraw"
+      ],
+      "properties": {
+        "withdraw": {
+          "type": "object",
+          "required": [
+            "amount",
+            "denom"
+          ],
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "format": "uint128",
+              "minimum": 0.0
+            },
+            "denom": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "add_bid"
+      ],
+      "properties": {
+        "add_bid": {
+          "type": "object",
+          "required": [
+            "token_id"
+          ],
+          "properties": {
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "add_ask"
+      ],
+      "properties": {
+        "add_ask": {
+          "type": "object",
+          "required": [
+            "amount",
+            "denom",
+            "token_id"
+          ],
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "format": "uint128",
+              "minimum": 0.0
+            },
+            "denom": {
+              "type": "string"
+            },
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "remove_offer"
+      ],
+      "properties": {
+        "remove_offer": {
+          "type": "object",
+          "required": [
+            "token_id"
+          ],
+          "properties": {
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

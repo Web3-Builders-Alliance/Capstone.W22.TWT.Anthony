@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QueryMsg",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "deposits"
+      ],
+      "properties": {
+        "deposits": {
+          "type": "object",
+          "required": [
+            "address"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "address_offers"
+      ],
+      "properties": {
+        "address_offers": {
+          "type": "object",
+          "required": [
+            "address",
+            "bid"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "bid": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "token_id_offers"
+      ],
+      "properties": {
+        "token_id_offers": {
+          "type": "object",
+          "required": [
+            "bid",
+            "token_id"
+          ],
+          "properties": {
+            "bid": {
+              "type": "boolean"
+            },
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}
