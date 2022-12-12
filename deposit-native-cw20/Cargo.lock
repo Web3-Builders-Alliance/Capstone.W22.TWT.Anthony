@@ -451,6 +451,7 @@ dependencies = [
  "cw20-example",
  "cw721 0.16.0",
  "cw721-base 0.16.0",
+ "nft",
  "schemars",
  "serde",
  "thiserror",

@@ -25,6 +25,7 @@ pub struct Deposits {
 pub struct Cw721Deposits {
     pub owner: String,
     pub contract:String,
+    // We could also use a Vec here so we have one item per owner|contract pair in CW721_DEPOSITS
     pub token_id:String
 }
 

@@ -21,4 +21,7 @@ pub enum ContractError {
     #[error("Contracts does not own this cw721, token_id: {token_id:?}")]
     NoCw721ToWithdraw {token_id:String},
 
+    #[error("Stake duration has not passed")]
+    StakeDurationNotPassed {},
+
 }

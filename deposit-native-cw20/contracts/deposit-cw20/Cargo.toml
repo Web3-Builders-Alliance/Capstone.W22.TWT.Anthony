@@ -53,6 +53,7 @@ schemars = "0.8.8"
 serde = { version = "1.0.137", default-features = false, features = ["derive"] }
 thiserror = { version = "1.0.31" }
 cw20-example = { path = "../cw20", version = "0.1.0" }
+nft = { path = "../nft", version = "0.1.0" }
 
 [dev-dependencies]
 cosmwasm-schema = "1.0.0"
