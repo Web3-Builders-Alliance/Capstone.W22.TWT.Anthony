@@ -1,0 +1,67 @@
+[workspace]
+members = [
+	"contracts/*"
+	]
+exclude = ["ci/configs/"]
+
+
+
+[profile.release.package.factory]
+codegen-units = 1
+incremental = false
+
+[profile.release]
+codegen-units = 1
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+panic = 'abort'
+incremental = false
+overflow-checks = true
+
+[workspace.dependencies]
+cosmwasm-std = { version = "1.1", features = ["ibc3"] }
+cosmwasm-storage = { version = "1.1" }
+cosmwasm-schema = { version = "1.1" }
+cw-utils = "0.16"
+thiserror = { version = "1.0.30" }
+cw-storage-plus = "0.16"
+cw2 = "0.16"
+cw20 = "0.16"
+cw721 = "0.16"
+cw20-base = "0.16"
+cw-core-v1 = { package = "cw-core", version = "0.1.0", git = "https://github.com/DA0-DA0/dao-contracts.git", tag = "v1.0.0" }
+cw-multi-test = "0.16"
+cw721-base = "0.16"
+cw-controllers = "0.16"
+anyhow = { version = "1.0.51"}
+cw4-group = "0.16"
+rand = "0.8"
+cw4 = "0.16"
+cw3 = "0.16"
+indexmap = "1.9"
+serde = "1.0"
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "1.0", features = ["derive"] }
+# cw-paginate = { path = "./packages/cw-paginate" }
+cw-utils-v1 = {package = "cw-utils", version = "0.13"}
+
+
+
+
+# cw-denom = { path = "./packages/cw-denom" }
+# cw-hooks = { path = "./packages/cw-hooks" }
+# cw721-controllers = { path = "./packages/cw721-controllers" }
+# dao-macros = { path = "./packages/dao-macros" }
+# dao-pre-propose-base = { path = "./packages/dao-pre-propose-base" }
+# dao-proposal-hooks = { path = "./packages/dao-proposal-hooks" }
+
+# dao-testing = { path = "./packages/dao-testing" }
+# dao-vote-hooks = { path = "./packages/dao-vote-hooks" }
+# dao-interface = { path = "./packages/dao-interface" }
+# dao-voting = { path = "./packages/dao-voting" }
+# cw-proposal-single-v1 = { package = "cw-proposal-single", version = "0.1.0", git = "https://github.com/DA0-DA0/dao-contracts.git", tag = "v1.0.0" }
+# voting-v1 = { package = "voting", version = "0.1.0", git = "https://github.com/DA0-DA0/dao-contracts.git", tag = "v1.0.0" }
