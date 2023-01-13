@@ -17,6 +17,7 @@ cw20-base= { workspace = true }
 cw721 = { workspace = true }
 thiserror = { workspace = true }
 cw-core-v1 = { workspace = true }
+factory = {path="../factory"}
 
 [dev-dependencies]
 cw-multi-test = { workspace = true, features = ["stargate"] }

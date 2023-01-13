@@ -2,10 +2,13 @@ use crate::{
     error::ContractError,
     execute::{execute_create_campaign, execute_update_config},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
+    state::CONFIG,
 };
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult};
+use cosmwasm_std::{
+    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult,
+};
 use cw2::set_contract_version;
 
 pub(crate) const CONTRACT_NAME: &str = "crates.io:campaign-factory";
@@ -57,10 +60,13 @@ pub fn execute(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
-    match msg {}
+    match msg {
+        QueryMsg::GetConfig {} => to_binary(&CONFIG.load(_deps.storage)?),
+    }
 }
+
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
+pub fn reply(_deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
     match msg.id {
         _ => Err(ContractError::UnknownReplyID {}),
     }

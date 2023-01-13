@@ -19,9 +19,8 @@ pub fn execute_register_receipt_contract(
     deps: DepsMut,
     _env: Env,
     _info: MessageInfo,
-    contract_addr:String
+    contract_addr: String,
 ) -> Result<Response, ContractError> {
-
     // TODO: check if contract_addr is a valid contract address
     let receipt = deps.api.addr_validate(&contract_addr)?;
 

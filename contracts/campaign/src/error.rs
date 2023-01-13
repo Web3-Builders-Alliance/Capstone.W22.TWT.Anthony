@@ -1,5 +1,4 @@
 use cosmwasm_std::StdError;
-use cw_utils::ParseReplyError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -18,6 +17,9 @@ pub enum ContractError {
     #[error("Goal cannot be empty")]
     EmptyGoal {},
 
-    #[error("Invalid expiration date, a date in the past was provided: {0}", provided)]
-    ExpirationInPast {provided: String},
+    #[error(
+        "Invalid expiration date, a date in the past was provided: {0}",
+        provided
+    )]
+    ExpirationInPast { provided: String },
 }

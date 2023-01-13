@@ -13,11 +13,11 @@ pub fn execute_create_campaign(
     _deps: DepsMut,
     _env: Env,
     _info: MessageInfo,
-    expiration: Expiration,
-    threshold: Balance,
-    funds_recipient: String,
-    cw20_init_msg: Option<crate::msg::InitMsgEnum>,
-    cw721_init_msg: InitMsgEnum,
+    _expiration: Expiration,
+    _threshold: Balance,
+    _funds_recipient: String,
+    _cw20_init_msg: Option<crate::msg::InitMsgEnum>,
+    _cw721_init_msg: InitMsgEnum,
 ) -> Result<Response, ContractError> {
     Ok(Response::default())
 }
@@ -26,8 +26,8 @@ pub fn execute_update_config(
     _deps: DepsMut,
     _env: Env,
     _info: MessageInfo,
-    admin: String,
-    codeIds: CodeIds,
+    _admin: Option<String>,
+    _code_ids: CodeIds,
 ) -> Result<Response, ContractError> {
     Ok(Response::default())
 }

@@ -10,6 +10,7 @@ pub struct Config {
     pub goal: Balance,
     pub funds_recipient: Addr,
     pub receipt_contract: String,
+    pub factory_contract: Addr,
 }
 
 #[cw_serde]
@@ -21,4 +22,5 @@ pub struct Donations {
 pub const CONFIG: Item<Config> = Item::new("config");
 
 //  store donations as a map user_addr -> coin
+// that map is not necessary if cw721 is non transferable
 pub const DONATIONS: Map<Addr, Coin> = Map::new("donations");

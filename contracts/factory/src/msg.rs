@@ -1,11 +1,10 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::Coin;
 use cw20::Balance;
 use cw_utils::Expiration;
 
 use cw20_base::msg::InstantiateMsg as CW20InstantiateMsg;
 
-use crate::state::CodeIds;
+pub use crate::state::{CodeIds, Config};
 
 #[cw_serde]
 pub struct InstantiateMsg {}
@@ -20,14 +19,17 @@ pub enum ExecuteMsg {
         cw721_init_msg: InitMsgEnum,
     },
     UpdateConfig {
-        admin: String,
+        admin: Option<String>,
         code_ids: CodeIds,
     },
 }
 
 #[cw_serde]
 #[derive(QueryResponses)]
-pub enum QueryMsg {}
+pub enum QueryMsg {
+    #[returns(Config)]
+    GetConfig {},
+}
 
 #[cw_serde]
 pub struct MigrateMsg {}
