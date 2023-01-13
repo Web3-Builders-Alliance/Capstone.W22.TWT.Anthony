@@ -1,4 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
+use cosmwasm_std::Coin;
 use cw20::Balance;
 use cw_utils::Expiration;
 
@@ -10,19 +11,19 @@ use crate::state::CodeIds;
 pub struct InstantiateMsg {}
 
 #[cw_serde]
-pub enum ExecuteMsg { 
-    CreatePool {
-        name: String,
-        symbol: String,
-        cw20_code_id: u64,
-        cw3_code_id: u64,
-        cw721_code_id: u64,
+pub enum ExecuteMsg {
+    CreateCampaign {
+        expiration: Expiration,
+        threshold: Balance,
+        funds_recipient: String,
+        cw20_init_msg: Option<crate::msg::InitMsgEnum>,
+        cw721_init_msg: InitMsgEnum,
     },
     UpdateConfig {
         admin: String,
         code_ids: CodeIds,
     },
-  }
+}
 
 #[cw_serde]
 #[derive(QueryResponses)]
@@ -40,10 +41,9 @@ pub struct PoolInfo {
 }
 
 #[cw_serde]
-pub enum InitMsgEnum{
-    Cw20InitMsg{
-        msg:CW20InstantiateMsg
-        
+pub enum InitMsgEnum {
+    Cw20InitMsg {
+        msg: CW20InstantiateMsg,
     },
     // cw3_initMsg{
     //     voters: Vec<Voter>,
@@ -51,7 +51,7 @@ pub enum InitMsgEnum{
     //     max_voting_period: Option<u64>,
     //     description: String,
     // },
-    Cw721InitMsg{
+    Cw721InitMsg {
         name: String,
         symbol: String,
         minter: String,

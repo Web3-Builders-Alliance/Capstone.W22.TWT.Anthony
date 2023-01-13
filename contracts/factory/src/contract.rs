@@ -1,13 +1,16 @@
+use crate::{
+    error::ContractError,
+    execute::{execute_create_campaign, execute_update_config},
+    msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
+};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, Deps, StdResult, Binary, Reply};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult};
 use cw2::set_contract_version;
-use crate::{msg::{ExecuteMsg, InstantiateMsg, QueryMsg, MigrateMsg}, error::ContractError};
 
 pub(crate) const CONTRACT_NAME: &str = "crates.io:campaign-factory";
 pub(crate) const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-// add cosmwasm smart contract boiler plate
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     deps: DepsMut,
@@ -24,17 +27,33 @@ pub fn instantiate(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
-    _deps: DepsMut,
+    deps: DepsMut,
     _env: Env,
     _info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::CreatePool {name, symbol, cw20_code_id, cw3_code_id, cw721_code_id } => execute_create_pool(deps, env, info, name, symbol, cw20_code_id, cw3_code_id, cw721_code_id),
-        ExecuteMsg::UpdateConfig { admin, code_ids } => execute_update_config(deps, env, info, admin, code_ids)
+        ExecuteMsg::CreateCampaign {
+            expiration,
+            threshold,
+            funds_recipient,
+            cw20_init_msg,
+            cw721_init_msg,
+        } => execute_create_campaign(
+            deps,
+            _env,
+            _info,
+            expiration,
+            threshold,
+            funds_recipient,
+            cw20_init_msg,
+            cw721_init_msg,
+        ),
+        ExecuteMsg::UpdateConfig { admin, code_ids } => {
+            execute_update_config(deps, _env, _info, admin, code_ids)
+        }
     }
 }
-
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {

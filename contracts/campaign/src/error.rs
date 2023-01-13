@@ -14,4 +14,10 @@ pub enum ContractError {
     // ParseReplyError(#[from] ParseReplyError),
     #[error("An unknown reply ID was received.")]
     UnknownReplyID {},
+
+    #[error("Goal cannot be empty")]
+    EmptyGoal {},
+
+    #[error("Invalid expiration date, a date in the past was provided: {0}", provided)]
+    ExpirationInPast {provided: String},
 }
