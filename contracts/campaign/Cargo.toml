@@ -4,22 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-cosmwasm-std = { workspace = true, features = ["ibc3"] }
+cosmwasm-std = { workspace = true }
 cosmwasm-storage = { workspace = true }
 cosmwasm-schema = { workspace = true }
-cw-storage-plus = { workspace = true }
-cw2 = { workspace = true }
-cw-utils = { workspace = true }
-cw20 = { workspace = true }
-cw20-base= { workspace = true }
-cw721 = { workspace = true }
-thiserror = { workspace = true }
-cw-core-v1 = { workspace = true }
-factory = {path="../factory"}
 
-[dev-dependencies]
-cw-multi-test = { workspace = true, features = ["stargate"] }
-cw20-base = { workspace = true }
-cw721-base = { workspace = true }
+cw2 = { workspace = true }
+cw20 = { workspace = true }
+# cw721 = { workspace = true }
+cw20-base= { workspace = true }
+# cw721-base = { workspace = true }
+cw-storage-plus = { workspace = true }
+cw-utils = { workspace = true }
+
+thiserror = { workspace = true }
+factory = {path="../factory"}
