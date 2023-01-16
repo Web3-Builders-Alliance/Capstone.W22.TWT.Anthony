@@ -3,6 +3,15 @@ name = "campaign"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# for more explicit tests, cargo test --features=backtraces
+backtraces = ["cosmwasm-std/backtraces"]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 cosmwasm-std = { workspace = true }
@@ -18,4 +27,4 @@ cw-storage-plus = { workspace = true }
 cw-utils = { workspace = true }
 
 thiserror = { workspace = true }
-factory = {path="../factory"}
+factory = {path="../factory", features = ["library"]}
