@@ -1,0 +1,2 @@
+f8d1decb3036fef954248b2f279364e8290e9f123fe18dad4a56a3c6a0d20c9e  target/wasm32-unknown-unknown/release/campaign.wasm
+9c54b880c5c1bef842d3d4f756fc8d6e220965e5eb26acf80846f6bae09d1941  target/wasm32-unknown-unknown/release/factory.wasm

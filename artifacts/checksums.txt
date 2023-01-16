@@ -1,0 +1,2 @@
+8a9f5ea1dce9dd60257933ab48a0f2f8d7a81cf11f77ac12921c23d19e192ef8  campaign.wasm
+f0b4e6d83f86c9f12cb07670023d14dadd8c9f8bccea8de1ce1eb65b5e9738bc  factory.wasm
