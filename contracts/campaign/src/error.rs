@@ -22,4 +22,7 @@ pub enum ContractError {
         provided
     )]
     ExpirationInPast { provided: String },
+
+    #[error("Custom Error val: {val:?}")]
+    CustomError { val: String },
 }

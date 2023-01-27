@@ -1,8 +1,11 @@
 [workspace]
-members = [
-	"contracts/*"
-	]
+members = ["packages/*", "contracts/*"]
 exclude = ["ci/configs/"]
+
+[workspace.package]
+version="0.1.0"
+edition       = "2021"
+
 
 [profile.release.package.factory]
 codegen-units = 1
@@ -33,6 +36,8 @@ cw721-base = "0.16"
 cw-storage-plus = "0.16"
 cw-utils = "0.16"
 
+
 serde = "1.0"
+schemars="0.8"
 proc-macro2 = "1.0"
 thiserror = { version = "1.0.30" }

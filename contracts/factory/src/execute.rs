@@ -1,8 +1,14 @@
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{
+    to_binary, Addr, DepsMut, Env, MessageInfo, ReplyOn, Response, SubMsg, Timestamp, WasmMsg,
+};
 use cw20::Balance;
-use cw_utils::Expiration;
 
-use crate::{error::ContractError, msg::InitMsgEnum, state::CodeIds};
+use crate::{
+    error::ContractError,
+    msg::InstantiateCampaignMsg,
+    reply::CREATE_CAMPAIGN_REPLY_ID,
+    state::{CodeIds, CONFIG, TEMP_CAMPAIGN_CREATOR},
+};
 
 /*
     - does campaign needs a cw20 token? -> should provide cw20_initMsg
@@ -10,24 +16,72 @@ use crate::{error::ContractError, msg::InitMsgEnum, state::CodeIds};
     - should provide cw3_mintMsg
 */
 pub fn execute_create_campaign(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    _expiration: Expiration,
-    _threshold: Balance,
-    _funds_recipient: String,
-    _cw20_init_msg: Option<crate::msg::InitMsgEnum>,
-    _cw721_init_msg: InitMsgEnum,
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    name: String,
+    expiration: Timestamp,
+    goal: Balance,
+    recipient: String,
 ) -> Result<Response, ContractError> {
-    Ok(Response::default())
+    // get campaign code_id
+    let config = CONFIG.load(deps.storage)?;
+
+    // temporarily store campaign creator
+    let _temp_creator = TEMP_CAMPAIGN_CREATOR.save(deps.storage, &info.sender.to_string())?;
+
+    // should controls be done there instead of inside the campaign contract?
+    // instantiate campaign
+    let campaign_init_msg = InstantiateCampaignMsg {
+        name,
+        expiration,
+        goal,
+        recipient,
+    };
+
+    Ok(Response::new()
+        .add_attribute("method", "create_campaign")
+        .add_attribute("creator", info.sender)
+        .add_submessage(SubMsg {
+            // instantiate
+            msg: WasmMsg::Instantiate {
+                admin: Some(env.contract.address.to_string()),
+                code_id: config.code_ids.campaign,
+                msg: to_binary(&campaign_init_msg)?,
+                funds: vec![],
+                label: "create campaign".to_string(),
+            }
+            .into(),
+            gas_limit: None,
+            id: CREATE_CAMPAIGN_REPLY_ID,
+            reply_on: ReplyOn::Success,
+        }))
 }
 
 pub fn execute_update_config(
-    _deps: DepsMut,
+    deps: DepsMut,
     _env: Env,
-    _info: MessageInfo,
-    _admin: Option<String>,
-    _code_ids: CodeIds,
+    info: MessageInfo,
+    admin: Option<Addr>,
+    code_ids: CodeIds,
 ) -> Result<Response, ContractError> {
-    Ok(Response::default())
+    let mut config = CONFIG.load(deps.storage)?;
+
+    if info.sender != config.admin {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    match admin {
+        Some(admin) => {
+            let valid = deps.api.addr_validate(&admin.to_string())?;
+            config.admin = valid
+        }
+        None => {}
+    }
+
+    config.code_ids = code_ids;
+
+    CONFIG.save(deps.storage, &config)?;
+
+    Ok(Response::new().add_attribute("method", "update_config"))
 }

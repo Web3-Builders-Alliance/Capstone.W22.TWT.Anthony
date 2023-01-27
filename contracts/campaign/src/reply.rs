@@ -18,7 +18,6 @@ pub fn handle_instantiate_reply(
         Ok(config)
     })?;
 
-
     Ok(Response::new()
         .add_attribute("action", "instantiated by factory")
         .add_attribute("pool_addr", res.contract_address.to_string()))

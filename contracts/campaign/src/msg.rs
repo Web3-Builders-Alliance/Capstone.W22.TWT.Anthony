@@ -1,6 +1,6 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::Timestamp;
-use cw20::Balance;
+use cosmwasm_std::{Timestamp, Coin};
+use cw20::{Balance, Cw20ReceiveMsg};
 
 use crate::state::Config;
 
@@ -9,12 +9,15 @@ pub struct InstantiateMsg {
     pub name: String,
     pub expiration: Timestamp,
     pub goal: Balance,
-    pub funds_recipient: String,
+    pub recipient: String,
 }
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    RegisterReceiptContract { contract_addr: String },
+    // RegisterReceiptContract { contract_addr: String },
+    Receive(Cw20ReceiveMsg),
+    Deposit{ amount: Coin },
+    Redeem{}
 }
 
 #[cw_serde]
@@ -26,3 +29,11 @@ pub enum QueryMsg {
 
 #[cw_serde]
 pub struct MigrateMsg {}
+
+
+#[cw_serde]
+pub enum Cw20HookMsg {
+    Deposit {
+        amount: Coin
+    },
+}

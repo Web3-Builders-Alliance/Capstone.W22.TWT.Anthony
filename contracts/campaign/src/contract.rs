@@ -1,6 +1,6 @@
 use crate::{
     error::ContractError,
-    execute::execute_register_receipt_contract,
+    execute::{execute_register_receipt_contract, execute_deposit, execute_native_deposit, receive_cw20, execute_redeem},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
     reply::{handle_instantiate_reply, INSTANTIATE_REPLY_ID},
     state::{Config, CONFIG},
@@ -45,7 +45,7 @@ pub fn instantiate(
     let cloned_msg = msg.clone();
 
     // check that funds recipient is a valid address
-    let address_to = deps.api.addr_validate(&msg.funds_recipient)?;
+    let address_to = deps.api.addr_validate(&msg.recipient)?;
 
     CONFIG.save(
         deps.storage,
@@ -53,7 +53,7 @@ pub fn instantiate(
             name: msg.name,
             expiration: msg.expiration,
             goal: msg.goal,
-            funds_recipient: address_to,
+            recipient: address_to,
             receipt_contract: "".to_string(), // will be set in the handle_instantiate_reply function
             factory_contract: Addr::from(info.sender.clone()),
         },
@@ -65,7 +65,7 @@ pub fn instantiate(
         .query_wasm_smart("factory", &GetFactoryConfig {})
         .unwrap();
 
-    let cw721_init_msg = InitMsgEnum::Cw721InitMsg {
+    let cw721_init_msg = cw721_base::InstantiateMsg {
         name: cloned_msg.name.to_string(),
         symbol: "campaign_receipt".to_string(),
         minter: _env.contract.address.to_string(),
@@ -95,16 +95,16 @@ pub fn instantiate(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::RegisterReceiptContract { contract_addr } => {
-            execute_register_receipt_contract(_deps, _env, _info, contract_addr)
-        }
-    }
+    ExecuteMsg::Receive(cw20_msg) => receive_cw20(deps, env, info, cw20_msg),
+    ExecuteMsg::Deposit { amount  } => execute_native_deposit(deps, info, amount),
+    ExecuteMsg::Redeem {  } => execute_redeem(deps,info),
+}
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

@@ -2,7 +2,8 @@ use crate::{
     error::ContractError,
     execute::{execute_create_campaign, execute_update_config},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
-    state::CONFIG,
+    reply::{handle_campaign_creation_reply, CREATE_CAMPAIGN_REPLY_ID},
+    state::{Config, CONFIG},
 };
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
@@ -19,13 +20,25 @@ pub fn instantiate(
     deps: DepsMut,
     _env: Env,
     info: MessageInfo,
-    _msg: InstantiateMsg,
+    msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
+    let admin = match msg.admin {
+        Some(admin) => deps.api.addr_validate(&admin).unwrap(),
+        None => info.sender.clone(),
+    };
+
+    let config = Config {
+        admin: admin,
+        code_ids: msg.code_ids,
+    };
+
+    CONFIG.save(deps.storage, &config)?;
+
     Ok(Response::new()
         .add_attribute("method", "instantiate")
-        .add_attribute("creator", info.sender))
+        .add_attribute("admin", config.admin.to_string()))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -37,20 +50,13 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::CreateCampaign {
+            name,
             expiration,
-            threshold,
-            funds_recipient,
-            cw20_init_msg,
-            cw721_init_msg,
+            goal,
+            recipient,
         } => execute_create_campaign(
-            deps,
-            _env,
-            _info,
-            expiration,
-            threshold,
-            funds_recipient,
-            cw20_init_msg,
-            cw721_init_msg,
+            deps, _env, _info, name, expiration, goal,
+            recipient,
         ),
         ExecuteMsg::UpdateConfig { admin, code_ids } => {
             execute_update_config(deps, _env, _info, admin, code_ids)
@@ -68,6 +74,7 @@ pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn reply(_deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
     match msg.id {
+        CREATE_CAMPAIGN_REPLY_ID => handle_campaign_creation_reply(_deps, _env, msg),
         _ => Err(ContractError::UnknownReplyID {}),
     }
 }

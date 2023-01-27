@@ -1,2 +1,3 @@
-f8d1decb3036fef954248b2f279364e8290e9f123fe18dad4a56a3c6a0d20c9e  target/wasm32-unknown-unknown/release/campaign.wasm
-9c54b880c5c1bef842d3d4f756fc8d6e220965e5eb26acf80846f6bae09d1941  target/wasm32-unknown-unknown/release/factory.wasm
+d58e9c2a005efc167216ca4c6a766f7563f208443ad9bb96ed5a5ef0b562f2f0  target/wasm32-unknown-unknown/release/campaign.wasm
+4fdb13fbd0f6f14e2bd2e500912940f4152a0b93ea9c2f131461ff46add92887  target/wasm32-unknown-unknown/release/campaign_receipt.wasm
+81122a3f13575c1353ac064e14f588a01148b162cb0915a81cbdd7c0863fe55e  target/wasm32-unknown-unknown/release/factory.wasm

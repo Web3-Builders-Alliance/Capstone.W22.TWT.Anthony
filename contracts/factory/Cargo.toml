@@ -28,3 +28,5 @@ cw-storage-plus = { workspace = true }
 cw-utils = { workspace = true }
 
 thiserror = { workspace = true }
+
+# campaign = {path="../campaign", features = ["library"]}

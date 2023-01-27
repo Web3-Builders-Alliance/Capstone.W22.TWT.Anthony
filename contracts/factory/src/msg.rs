@@ -1,4 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
+use cosmwasm_std::{Addr, Timestamp};
 use cw20::Balance;
 use cw_utils::Expiration;
 
@@ -7,19 +8,31 @@ use cw20_base::msg::InstantiateMsg as CW20InstantiateMsg;
 pub use crate::state::{CodeIds, Config};
 
 #[cw_serde]
-pub struct InstantiateMsg {}
+pub struct InstantiateMsg {
+    pub admin: Option<String>,
+    pub code_ids: CodeIds,
+}
+
+#[cw_serde]
+pub struct InstantiateCampaignMsg {
+    pub name: String,
+    pub expiration: Timestamp,
+    pub goal: Balance,
+    pub recipient: String,
+}
 
 #[cw_serde]
 pub enum ExecuteMsg {
     CreateCampaign {
-        expiration: Expiration,
-        threshold: Balance,
-        funds_recipient: String,
-        cw20_init_msg: Option<crate::msg::InitMsgEnum>,
-        cw721_init_msg: InitMsgEnum,
+        name: String,
+        expiration: Timestamp,
+        goal: Balance,
+        recipient: String,
+        // cw20_init_msg: Option<crate::msg::InitMsgEnum>,
+        // cw721_init_msg: InitMsgEnum,
     },
     UpdateConfig {
-        admin: Option<String>,
+        admin: Option<Addr>,
         code_ids: CodeIds,
     },
 }
