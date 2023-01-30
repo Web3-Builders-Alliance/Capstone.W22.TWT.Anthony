@@ -1,5 +1,5 @@
 use cosmwasm_std::{
-    to_binary, Addr, DepsMut, Env, MessageInfo, ReplyOn, Response, SubMsg, WasmMsg, Coin,
+    to_binary, Addr, Coin, DepsMut, Env, MessageInfo, ReplyOn, Response, SubMsg, WasmMsg,
 };
 
 use crate::{

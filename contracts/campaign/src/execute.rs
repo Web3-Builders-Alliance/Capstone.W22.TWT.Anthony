@@ -1,9 +1,11 @@
 use campaign_receipt::contract::{Metadata, Payment};
 use campaign_receipt::msg::ExecuteMsg::UpdateMetadata;
 use cosmwasm_std::{
-    to_binary, Attribute, DepsMut, Env, MessageInfo, Response, StdResult, Timestamp, WasmMsg,
+    to_binary, Attribute, DepsMut, Empty, Env, MessageInfo, Response, StdResult, Timestamp, WasmMsg,
 };
 use cw721::{Cw721QueryMsg, TokensResponse};
+// use cw721_base::MintMsg;
+use cw721_base::ExecuteMsg::Mint;
 use cw721_base::MintMsg;
 use cw_utils::{must_pay, Expiration};
 
@@ -55,17 +57,14 @@ pub fn execute_deposit(
         // -> mint receipt
         let mint_receipt_msg = WasmMsg::Execute {
             contract_addr: receipt,
-            msg: to_binary(&MintMsg {
+            msg: to_binary(&Mint::<Metadata, Empty>(MintMsg {
                 token_id: info.sender.to_string(),
                 owner: info.sender.to_string(),
-                extension: Metadata {
-                    payments: vec![Payment {
-                        amount: deposited,
-                        date: env.block.time,
-                    }],
-                },
                 token_uri: None,
-            })?,
+                extension: Metadata {
+                    payments: vec![Payment{amount: deposited, date: env.block.time}],
+                }
+            }))?,
             funds: vec![],
         };
 
