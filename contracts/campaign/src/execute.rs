@@ -1,19 +1,19 @@
 use campaign_receipt::contract::{Metadata, Payment};
 use campaign_receipt::msg::ExecuteMsg::UpdateMetadata;
 use cosmwasm_std::{
-    to_binary, Attribute, DepsMut, Empty, Env, MessageInfo, Response, StdResult, Timestamp, WasmMsg,
+    to_binary, Attribute, DepsMut, Empty, Env, MessageInfo, Response, StdResult,  WasmMsg, WasmQuery, Uint128, BankMsg, Coin, 
 };
-use cw721::{Cw721QueryMsg, TokensResponse};
-// use cw721_base::MintMsg;
-use cw721_base::ExecuteMsg::Mint;
-use cw721_base::MintMsg;
-use cw_utils::{must_pay, Expiration};
+use cw721::{Cw721QueryMsg, TokensResponse, NftInfoResponse};
 
+use cw721_base::ExecuteMsg::Mint;
+use cw721_base::{MintMsg, QueryMsg};
+use cw_utils::{must_pay};
+
+use crate::helper::{check_if_expired, check_if_goal_reached};
 use crate::{
     error::ContractError,
     state::{Collected, COLLECTED_AMOUNT, CONFIG},
 };
-
 /*
     - does campaign needs a cw20 token? -> should provide cw20_initMsg
     - should provide cw721_initMsg
@@ -32,10 +32,7 @@ pub fn execute_deposit(
 
     let receipt = config.receipt_contract;
 
-    // check if campaign expired ?
-    if Expiration::AtTime(Timestamp::from_seconds(config.expiration)).is_expired(&env.block) {
-        return Err(ContractError::Expired {});
-    }
+    check_if_expired(deps.storage, env.clone())?;
 
     // check if sender already is in donors list
     let tokens: TokensResponse = deps
@@ -99,19 +96,67 @@ pub fn execute_deposit(
     Ok(
         Response::new()
             .add_attribute("execute", "deposit")
-            .add_attribute("depositor", "purchase")
             .add_attributes(attributes)
             .add_messages(msgs), // might not be executed in the right order ??
     )
 }
 
-pub fn execute_redeem(_deps: DepsMut, _info: MessageInfo) -> Result<Response, ContractError> {
-    // check if amount is goal is reached
-    // check if campaign expired ?
-    // -> : return error
+pub fn execute_redeem(deps:DepsMut,env: Env, _info: MessageInfo) -> Result<Response, ContractError> {
+    let storage = deps.storage;
+    check_if_expired(storage, env.clone())?;
 
-    // check if sender is in donors list
-    // -> : unauthorized
+    let config = CONFIG.load(storage)?;
+    let receipt = config.receipt_contract;
+    
+    let tokens: TokensResponse = deps
+        .querier
+        .query_wasm_smart(
+            receipt.clone(),
+            &Cw721QueryMsg::Tokens {
+                owner: _info.sender.to_string(),
+                start_after: None,
+                limit: None,
+            },
+        )
+        .unwrap_or_else(|_| TokensResponse { tokens: vec![] });
+
+    if tokens.tokens.is_empty() {
+            return Err(ContractError::NothingToRedeem { });
+    }else{
+
+        let reached = check_if_goal_reached(storage)?;
+    
+        if reached {
+            // should be able to redeem perks
+        }else {
+            // check that contracts has enough funds
+            let denom = config.goal.denom;
+            let contract_balance = deps.querier.query_balance(env.contract.address, &denom)?;
+            let msg: QueryMsg<Empty> = QueryMsg::NftInfo {
+                token_id: _info.sender.to_string(),
+            };
+            let query = WasmQuery::Smart {
+                contract_addr: receipt,
+                msg: to_binary(&msg)?,
+            }
+            .into();
+            let nft_info: NftInfoResponse<Metadata> = deps.querier.query(&query)?;  
+            
+            // sum up all user payments
+            let mut total_invested:Uint128= Uint128::zero();
+            for payment in nft_info.extension.payments {
+                total_invested += payment.amount;
+            }
+            if contract_balance.amount < total_invested {
+                return Err(ContractError::NotEnoughFunds { });
+            }else{
+                // send funds to user
+                let send_msg = BankMsg::Send { to_address: _info.sender.to_string(), amount: vec![Coin{denom: denom, amount: total_invested}] } ;
+                return Ok(Response::new().add_message(send_msg));
+            }
+        }
+    }
+    
 
     Ok(Response::default())
 }

@@ -3,7 +3,6 @@ mod query;
 mod receiver;
 mod traits;
 
-
 pub use crate::msg::Cw721ExecuteMsg;
 pub use crate::query::{
     AllNftInfoResponse, Approval, ApprovalResponse, ApprovalsResponse, ContractInfoResponse,

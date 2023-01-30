@@ -23,6 +23,10 @@ pub enum ContractError {
     #[error("Invalid Balance")]
     InvalidBalance {},
 
+    #[error("Contract is underfunded")]
+    NotEnoughFunds {},
+    
+
     #[error(
         "Invalid expiration date, a date in the past was provided: {0}",
         provided
@@ -32,6 +36,9 @@ pub enum ContractError {
     #[error("Campaign has expired")]
     Expired {},
 
+    #[error("User is not an investor")]
+    NothingToRedeem {},
+    
     #[error("Custom Error val: {val:?}")]
     CustomError { val: String },
 }

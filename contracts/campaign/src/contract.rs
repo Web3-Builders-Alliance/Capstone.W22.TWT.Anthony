@@ -105,7 +105,7 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::Deposit {} => execute_deposit(deps, env, info),
-        ExecuteMsg::Redeem {} => execute_redeem(deps, info),
+        ExecuteMsg::Redeem {} => execute_redeem(deps, env,info),
     }
 }
 
