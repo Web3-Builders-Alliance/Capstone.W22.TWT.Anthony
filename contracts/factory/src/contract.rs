@@ -26,11 +26,11 @@ pub fn instantiate(
 
     let admin = match msg.admin {
         Some(admin) => deps.api.addr_validate(&admin).unwrap(),
-        None => info.sender.clone(),
+        None => info.sender,
     };
 
     let config = Config {
-        admin: admin,
+        admin,
         code_ids: msg.code_ids,
     };
 
@@ -54,10 +54,7 @@ pub fn execute(
             expiration,
             goal,
             recipient,
-        } => execute_create_campaign(
-            deps, _env, _info, name, expiration, goal,
-            recipient,
-        ),
+        } => execute_create_campaign(deps, _env, _info, name, expiration, goal, recipient),
         ExecuteMsg::UpdateConfig { admin, code_ids } => {
             execute_update_config(deps, _env, _info, admin, code_ids)
         }

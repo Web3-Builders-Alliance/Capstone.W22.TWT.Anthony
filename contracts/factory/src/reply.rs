@@ -17,6 +17,8 @@ pub fn handle_campaign_creation_reply(
 
     let creator = TEMP_CAMPAIGN_CREATOR.load(deps.storage)?;
 
+    // TODO: check if creator has already created a campaign -> returns error
+
     // store campaign contract address
     CAMPAIGNS.save(deps.storage, creator, &res.contract_address)?;
 
@@ -25,5 +27,5 @@ pub fn handle_campaign_creation_reply(
 
     Ok(Response::new()
         .add_attribute("action", "instantiated by factory")
-        .add_attribute("pool_addr", res.contract_address.to_string()))
+        .add_attribute("campaign_addr", res.contract_address))
 }

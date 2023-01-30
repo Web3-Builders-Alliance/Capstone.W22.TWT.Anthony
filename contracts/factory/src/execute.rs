@@ -1,7 +1,6 @@
 use cosmwasm_std::{
-    to_binary, Addr, DepsMut, Env, MessageInfo, ReplyOn, Response, SubMsg, Timestamp, WasmMsg,
+    to_binary, Addr, DepsMut, Env, MessageInfo, ReplyOn, Response, SubMsg, WasmMsg, Coin,
 };
-use cw20::Balance;
 
 use crate::{
     error::ContractError,
@@ -20,15 +19,15 @@ pub fn execute_create_campaign(
     env: Env,
     info: MessageInfo,
     name: String,
-    expiration: Timestamp,
-    goal: Balance,
+    expiration: u64, // Timestamp in seconds,
+    goal: Coin,
     recipient: String,
 ) -> Result<Response, ContractError> {
     // get campaign code_id
     let config = CONFIG.load(deps.storage)?;
 
     // temporarily store campaign creator
-    let _temp_creator = TEMP_CAMPAIGN_CREATOR.save(deps.storage, &info.sender.to_string())?;
+    TEMP_CAMPAIGN_CREATOR.save(deps.storage, &info.sender.to_string())?;
 
     // should controls be done there instead of inside the campaign contract?
     // instantiate campaign
@@ -71,12 +70,9 @@ pub fn execute_update_config(
         return Err(ContractError::Unauthorized {});
     }
 
-    match admin {
-        Some(admin) => {
-            let valid = deps.api.addr_validate(&admin.to_string())?;
-            config.admin = valid
-        }
-        None => {}
+    if let Some(admin) = admin {
+        let valid = deps.api.addr_validate(admin.as_ref())?;
+        config.admin = valid
     }
 
     config.code_ids = code_ids;

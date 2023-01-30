@@ -1,7 +1,6 @@
 use cosmwasm_schema::cw_serde;
+use cosmwasm_std::Uint128;
 use cw721_base::MintMsg;
-
-use crate::contract::Metadata;
 
 #[cw_serde]
 pub enum ExecuteMsg<T> {
@@ -10,7 +9,7 @@ pub enum ExecuteMsg<T> {
     /// Updates metadata of the NFT
     UpdateMetadata {
         token_id: String,
-        metadata: Metadata,
+        amount: Uint128,
     },
     Burn {
         token_id: String,

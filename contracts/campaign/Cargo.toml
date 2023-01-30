@@ -28,3 +28,4 @@ cw-utils = { workspace = true }
 
 thiserror = { workspace = true }
 factory = {path="../factory", features = ["library"]}
+campaign_receipt = { path="../campaign_receipt"}

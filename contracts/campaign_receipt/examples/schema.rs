@@ -1,7 +1,7 @@
 use std::env::current_dir;
 use std::fs::create_dir_all;
 
-use campaign_receipt::{msg::ExecuteMsg, contract::Metadata};
+use campaign_receipt::{contract::Metadata, msg::ExecuteMsg};
 use cosmwasm_schema::{export_schema, remove_schemas, schema_for};
 use cw721_base::InstantiateMsg;
 

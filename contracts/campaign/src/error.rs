@@ -17,11 +17,20 @@ pub enum ContractError {
     #[error("Goal cannot be empty")]
     EmptyGoal {},
 
+    #[error("Unsupported coin")]
+    UnsupportedCoin {},
+
+    #[error("Invalid Balance")]
+    InvalidBalance {},
+
     #[error(
         "Invalid expiration date, a date in the past was provided: {0}",
         provided
     )]
     ExpirationInPast { provided: String },
+
+    #[error("Campaign has expired")]
+    Expired {},
 
     #[error("Custom Error val: {val:?}")]
     CustomError { val: String },

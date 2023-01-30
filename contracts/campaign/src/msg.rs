@@ -1,23 +1,20 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{Timestamp, Coin};
-use cw20::{Balance, Cw20ReceiveMsg};
+use cosmwasm_std::Coin;
 
 use crate::state::Config;
 
 #[cw_serde]
 pub struct InstantiateMsg {
     pub name: String,
-    pub expiration: Timestamp,
-    pub goal: Balance,
+    pub expiration: u64, // timestamp in seconds
+    pub goal: Coin,
     pub recipient: String,
 }
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    // RegisterReceiptContract { contract_addr: String },
-    Receive(Cw20ReceiveMsg),
-    Deposit{ amount: Coin },
-    Redeem{}
+    Deposit {},
+    Redeem {},
 }
 
 #[cw_serde]
@@ -30,10 +27,14 @@ pub enum QueryMsg {
 #[cw_serde]
 pub struct MigrateMsg {}
 
+// #[cw_serde]
+// pub enum Cw20HookMsg {
+//     Deposit { balance: Balance, sender: String },
+// }
 
-#[cw_serde]
-pub enum Cw20HookMsg {
-    Deposit {
-        amount: Coin
-    },
-}
+// // Adding default to the struct will allow us to use it in executes
+// #[cw_serde]
+// #[derive(Default)]
+// pub struct TokensResponse {
+//     pub tokens: Vec<String>
+// }

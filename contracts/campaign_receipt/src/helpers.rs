@@ -5,12 +5,11 @@ use cosmwasm_std::{
     WasmQuery,
 };
 
-//use crate::msg::{ExecuteMsg, GetCountResponse, QueryMsg};
-
+use cw721::NftInfoResponse;
 pub use cw721::{OwnerOfResponse, TokensResponse};
 pub use cw721_base::QueryMsg;
 
-use crate::contract::Cw721ExecuteMsg;
+use crate::contract::{Cw721ExecuteMsg, Metadata};
 
 /// CwTemplateContract is a wrapper around Addr that provides a lot of helpers
 /// for working with this.
@@ -49,6 +48,27 @@ impl NftContract {
         }
         .into();
         let res: OwnerOfResponse = QuerierWrapper::<CQ>::new(querier).query(&query)?;
+        Ok(res)
+    }
+
+    pub fn get_owner_donation<Q, T, CQ>(
+        &self,
+        querier: &Q,
+        token_id: String,
+    ) -> StdResult<NftInfoResponse<Metadata>>
+    where
+        Q: Querier,
+        T: Into<String>,
+        CQ: CustomQuery,
+    {
+        // query nft info donation
+        let msg: QueryMsg<Empty> = QueryMsg::NftInfo { token_id };
+        let query = WasmQuery::Smart {
+            contract_addr: self.addr().into(),
+            msg: to_binary(&msg)?,
+        }
+        .into();
+        let res: NftInfoResponse<Metadata> = QuerierWrapper::<CQ>::new(querier).query(&query)?;
         Ok(res)
     }
 

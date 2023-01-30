@@ -1,6 +1,7 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_schema::serde::Deserialize;
 use cosmwasm_std::Timestamp;
+use cosmwasm_std::Uint128;
 use schemars::JsonSchema;
 
 use cosmwasm_std::Empty;
@@ -14,26 +15,27 @@ use serde::Serialize;
 const CONTRACT_NAME: &str = "crates.io:donation- campaign-receipt";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-#[cw_serde]
-pub struct Trait {
-    pub display_type: Option<String>,
-    pub trait_type: String,
-    pub value: String,
-}
-
 // see: https://docs.opensea.io/docs/metadata-standards
 #[derive(Deserialize, Serialize, Clone, PartialEq, JsonSchema, Debug, Default)]
 pub struct Metadata {
-    pub name: String,
-    pub payments: Option<Vec<Payment>>,
-    pub tier: Option<String>,
+    // pub name: String,
+    pub payments: Vec<Payment>,
+    // pub tier: Option<String>,
 }
 
 #[cw_serde]
 pub struct Payment {
-    pub amount: String,
-    pub denom: String,
+    pub amount: Uint128,
     pub date: Timestamp,
+}
+
+impl Default for Payment {
+    fn default() -> Self {
+        Self {
+            amount: Uint128::default(),
+            date: Timestamp::from_seconds(0),
+        }
+    }
 }
 
 pub type Extension = Option<Metadata>;
@@ -48,8 +50,9 @@ pub mod entry {
     use super::*;
 
     use crate::msg::ExecuteMsg;
-    use cosmwasm_std::entry_point;
+    use cosmwasm_std::{entry_point, to_binary, WasmQuery};
     use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+    use cw721::NftInfoResponse;
     use cw721_base::ContractError;
 
     // This makes a conscious choice on the various generics used by the contract
@@ -83,10 +86,10 @@ pub mod entry {
             ExecuteMsg::Mint(mint_msg) => {
                 Cw721MetadataNonTransferableContract::default().mint(deps, env, info, mint_msg)
             }
-            ExecuteMsg::UpdateMetadata { token_id, metadata } => {
-                execute_update_on_chain_metadata(deps, env, info, token_id, metadata)
+            ExecuteMsg::UpdateMetadata { token_id, amount } => {
+                execute_update_on_chain_metadata(deps, env, info, token_id, amount)
             }
-            ExecuteMsg::Burn { token_id } => todo!(),
+            ExecuteMsg::Burn { token_id } => execute_burn(deps, env, info, token_id),
         }
     }
 
@@ -100,24 +103,51 @@ pub mod entry {
         _env: Env,
         info: MessageInfo,
         token_id: String,
-        metadata: Metadata,
+        amount: Uint128,
     ) -> Result<Response, ContractError> {
         let tract = Cw721MetadataNonTransferableContract::default();
         let minter = tract.minter.load(deps.storage)?;
         if info.sender != minter {
             Err(ContractError::Unauthorized {})
         } else {
+            // unable to use helper equivalent here .??
+            let msg: QueryMsg = QueryMsg::NftInfo {
+                token_id: token_id.clone(),
+            };
+            let query = WasmQuery::Smart {
+                contract_addr: _env.contract.address.to_string(),
+                msg: to_binary(&msg)?,
+            }
+            .into();
+
+            // query metadata
+            let mut nft_info: NftInfoResponse<Metadata> = deps.querier.query(&query)?;
+            nft_info.extension.payments.push(Payment {
+                amount,
+                date: _env.block.time,
+            });
+
             tract
                 .tokens
                 .update(deps.storage, &token_id, |token| match token {
                     Some(mut token_info) => {
-                        token_info.extension = Some(metadata);
+                        token_info.extension = Some(Metadata {
+                            payments: nft_info.extension.payments,
+                        });
                         Ok(token_info)
                     }
                     None => Err(ContractError::Unauthorized {}),
                 })?;
             Ok(Response::new())
         }
+    }
+    fn execute_burn(
+        _deps: DepsMut,
+        _env: Env,
+        _info: MessageInfo,
+        _token_id: String,
+    ) -> Result<Response, ContractError> {
+        Ok(Response::new())
     }
 }
 
@@ -152,7 +182,6 @@ mod tests {
             owner: "john".to_string(),
             token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
             extension: Some(Metadata {
-                name: "Starship USS Enterprise".to_string(),
                 ..Metadata::default()
             }),
         };

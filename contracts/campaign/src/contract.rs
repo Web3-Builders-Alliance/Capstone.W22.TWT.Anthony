@@ -1,20 +1,20 @@
 use crate::{
     error::ContractError,
-    execute::{execute_register_receipt_contract, execute_deposit, execute_native_deposit, receive_cw20, execute_redeem},
+    execute::{execute_deposit, execute_redeem},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
     reply::{handle_instantiate_reply, INSTANTIATE_REPLY_ID},
-    state::{Config, CONFIG},
+    state::{Collected, Config, COLLECTED_AMOUNT, CONFIG},
 };
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_binary, Addr, Binary, Deps, DepsMut, Env, MessageInfo, Reply, ReplyOn, Response, StdResult,
-    SubMsg, WasmMsg,
+    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Reply, ReplyOn, Response, StdResult,
+    SubMsg, Timestamp, WasmMsg,
 };
 use cw2::set_contract_version;
 use cw_utils::Expiration;
 
-use factory::msg::{Config as FactoryConfig, InitMsgEnum, QueryMsg::GetConfig as GetFactoryConfig};
+use factory::msg::{Config as FactoryConfig, QueryMsg::GetConfig as GetFactoryConfig};
 
 pub(crate) const CONTRACT_NAME: &str = "crates.io:campaign";
 pub(crate) const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -29,7 +29,8 @@ pub fn instantiate(
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
     // check that expiration is not expired
-    if Expiration::AtTime(msg.expiration).is_expired(&_env.block) {
+    // msg.expiration should be given in nanoseconds
+    if Expiration::AtTime(Timestamp::from_seconds(msg.expiration)).is_expired(&_env.block) {
         return Err(ContractError::ExpirationInPast {
             provided: msg.expiration.to_string(),
         });
@@ -38,7 +39,7 @@ pub fn instantiate(
     // shall we check that expiration is not too far in the future? -> define a campaign max duration
 
     // check that goal is not 0
-    if msg.goal.is_empty() {
+    if msg.goal.amount.is_zero() {
         return Err(ContractError::EmptyGoal {});
     }
 
@@ -52,17 +53,19 @@ pub fn instantiate(
         &Config {
             name: msg.name,
             expiration: msg.expiration,
-            goal: msg.goal,
+            goal: msg.goal.clone(),
             recipient: address_to,
             receipt_contract: "".to_string(), // will be set in the handle_instantiate_reply function
-            factory_contract: Addr::from(info.sender.clone()),
+            factory_contract: info.sender.clone(),
         },
     )?;
+
+    COLLECTED_AMOUNT.save(deps.storage, &Collected { coin: msg.goal })?;
 
     // get code_ids from factory
     let factory_config: FactoryConfig = deps
         .querier
-        .query_wasm_smart("factory", &GetFactoryConfig {})
+        .query_wasm_smart(info.sender.clone(), &GetFactoryConfig {})
         .unwrap();
 
     let cw721_init_msg = cw721_base::InstantiateMsg {
@@ -81,10 +84,10 @@ pub fn instantiate(
             // instantiate
             msg: WasmMsg::Instantiate {
                 admin: Some(_env.contract.address.to_string()),
-                code_id: factory_config.code_ids.cw721,
+                code_id: factory_config.code_ids.receipt,
                 msg: to_binary(&cw721_init_msg)?,
                 funds: vec![],
-                label: "instantiate campaign receipt".to_string(),
+                label: "campaign receipt".to_string(),
             }
             .into(),
             gas_limit: None,
@@ -101,10 +104,9 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-    ExecuteMsg::Receive(cw20_msg) => receive_cw20(deps, env, info, cw20_msg),
-    ExecuteMsg::Deposit { amount  } => execute_native_deposit(deps, info, amount),
-    ExecuteMsg::Redeem {  } => execute_redeem(deps,info),
-}
+        ExecuteMsg::Deposit {} => execute_deposit(deps, env, info),
+        ExecuteMsg::Redeem {} => execute_redeem(deps, info),
+    }
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

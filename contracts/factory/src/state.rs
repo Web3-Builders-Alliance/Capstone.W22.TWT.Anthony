@@ -7,7 +7,7 @@ pub struct CodeIds {
     pub campaign: u64,
     pub cw3: u64,
     pub cw20: u64,
-    pub cw721: u64,
+    pub receipt: u64,
 }
 #[cw_serde]
 pub struct Config {

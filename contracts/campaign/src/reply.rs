@@ -12,7 +12,7 @@ pub fn handle_instantiate_reply(
 ) -> Result<Response, ContractError> {
     let res = parse_reply_instantiate_data(msg).unwrap();
 
-    // store cw721 contract address
+    // store receipt contract address
     CONFIG.update(_deps.storage, |mut config| -> Result<_, ContractError> {
         config.receipt_contract = res.clone().contract_address;
         Ok(config)
@@ -20,5 +20,5 @@ pub fn handle_instantiate_reply(
 
     Ok(Response::new()
         .add_attribute("action", "instantiated by factory")
-        .add_attribute("pool_addr", res.contract_address.to_string()))
+        .add_attribute("receipt_address", res.contract_address))
 }
