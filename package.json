@@ -1,21 +1,11 @@
 {
   "name": "tests_contracts",
   "version": "1.0.0",
-  "description": "test talis contracts",
+  "description": "test wba contracts",
   "scripts": {
     "start": "TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true ts-node ./main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Talis-Art/tests_contracts.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Talis-Art/tests_contracts/issues"
-  },
-  "homepage": "https://github.com/Talis-Art/tests_contracts#readme",
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.28.4",
     "@cosmostation/cosmosjs": "^0.11.2",
