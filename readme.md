@@ -17,7 +17,7 @@ cw20 will be claimable once vesting is complete
 
 Contracts:
 
-Gov:
+Campaign:
 
 - is the only entity able to update factory params
 
@@ -26,3 +26,15 @@ Factory:
 - is the only entity able to instantiate:
   -- campaign contract
   -- associated cw721 and/or cw20 contracts
+
+Campaign_receipt:
+
+- is a mutable non transferable cw721
+- is emitted on every first deposit, subsequent deposits only update token metadata
+
+Vesting contract => cw_payroll?
+
+- cw20 token: perks for investors will be vested over time
+- campaign balance: will also be vested
+
+admin should be able to freeze/claw back if necessary

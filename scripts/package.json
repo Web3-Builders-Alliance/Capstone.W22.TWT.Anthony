@@ -1,0 +1,41 @@
+{
+  "name": "tests_contracts",
+  "version": "1.0.0",
+  "description": "test talis contracts",
+  "scripts": {
+    "start": "TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true ts-node ./main.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Talis-Art/tests_contracts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Talis-Art/tests_contracts/issues"
+  },
+  "homepage": "https://github.com/Talis-Art/tests_contracts#readme",
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.28.4",
+    "@cosmostation/cosmosjs": "^0.11.2",
+    "@terra-money/terra.js": "^3.1.0",
+    "axios": "^0.25.0",
+    "bignumber.js": "^9.0.2",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "chalk": "^4.1.2",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^10.0.0",
+    "graphql": "^16.3.0",
+    "graphql-tag": "^2.12.6",
+    "lodash.chunk": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/chai-as-promised": "^7.1.4",
+    "@types/chalk": "^2.2.0",
+    "ts-node": "^10.2.0",
+    "typescript": "^4.5.4"
+  }
+}

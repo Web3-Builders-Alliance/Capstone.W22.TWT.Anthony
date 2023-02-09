@@ -4,3 +4,8 @@
 contracts/*/schema
 packages/*/schema
 artifacts/*
+
+scripts/node_modules
+scripts/package-lock.json
+
+.env
