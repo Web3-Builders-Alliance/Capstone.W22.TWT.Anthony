@@ -15,3 +15,8 @@ pub enum ExecuteMsg<T> {
         token_id: String,
     },
 }
+
+#[cw_serde]
+pub enum QueryMsg {
+    GetTotalInvested { address: String },
+}

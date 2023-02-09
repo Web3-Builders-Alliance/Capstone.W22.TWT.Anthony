@@ -1,6 +1,6 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_schema::serde::Deserialize;
-use cosmwasm_std::Timestamp;
+
 use cosmwasm_std::Uint128;
 use schemars::JsonSchema;
 
@@ -18,22 +18,22 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 // see: https://docs.opensea.io/docs/metadata-standards
 #[derive(Deserialize, Serialize, Clone, PartialEq, JsonSchema, Debug, Default)]
 pub struct Metadata {
-    // pub name: String,
     pub payments: Vec<Payment>,
+    pub total: Uint128,
     // pub tier: Option<String>,
 }
 
 #[cw_serde]
 pub struct Payment {
     pub amount: Uint128,
-    pub date: Timestamp,
+    pub date: u64,
 }
 
 impl Default for Payment {
     fn default() -> Self {
         Self {
             amount: Uint128::default(),
-            date: Timestamp::from_seconds(0),
+            date: 0,
         }
     }
 }
@@ -122,9 +122,10 @@ pub mod entry {
 
             // query metadata
             let mut nft_info: NftInfoResponse<Metadata> = deps.querier.query(&query)?;
+            // add payment
             nft_info.extension.payments.push(Payment {
                 amount,
-                date: _env.block.time,
+                date: _env.block.time.seconds(),
             });
 
             tract
@@ -132,7 +133,12 @@ pub mod entry {
                 .update(deps.storage, &token_id, |token| match token {
                     Some(mut token_info) => {
                         token_info.extension = Some(Metadata {
-                            payments: nft_info.extension.payments,
+                            payments: nft_info.extension.payments.clone(),
+                            total: nft_info
+                                .extension
+                                .payments
+                                .iter()
+                                .fold(Uint128::zero(), |acc, x| acc + x.amount),
                         });
                         Ok(token_info)
                     }

@@ -1,13 +1,14 @@
 use campaign_receipt::contract::{Metadata, Payment};
 use campaign_receipt::msg::ExecuteMsg::UpdateMetadata;
 use cosmwasm_std::{
-    to_binary, Attribute, DepsMut, Empty, Env, MessageInfo, Response, StdResult,  WasmMsg, WasmQuery, Uint128, BankMsg, Coin, 
+    to_binary, Attribute, BankMsg, Coin, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+    Uint128, WasmMsg, WasmQuery,
 };
-use cw721::{Cw721QueryMsg, TokensResponse, NftInfoResponse};
+use cw721::{Cw721QueryMsg, NftInfoResponse, TokensResponse};
 
 use cw721_base::ExecuteMsg::Mint;
 use cw721_base::{MintMsg, QueryMsg};
-use cw_utils::{must_pay};
+use cw_utils::must_pay;
 
 use crate::helper::{check_if_expired, check_if_goal_reached};
 use crate::{
@@ -59,8 +60,12 @@ pub fn execute_deposit(
                 owner: info.sender.to_string(),
                 token_uri: None,
                 extension: Metadata {
-                    payments: vec![Payment{amount: deposited, date: env.block.time}],
-                }
+                    total: deposited,
+                    payments: vec![Payment {
+                        amount: deposited,
+                        date: env.block.time.seconds(),
+                    }],
+                },
             }))?,
             funds: vec![],
         };
@@ -100,14 +105,19 @@ pub fn execute_deposit(
             .add_messages(msgs), // might not be executed in the right order ??
     )
 }
-
-pub fn execute_redeem(deps:DepsMut,env: Env, _info: MessageInfo) -> Result<Response, ContractError> {
+// TODO implement balance payroll for recipient 
+// TODO implement cw20 payroll for investors
+pub fn execute_redeem(
+    deps: DepsMut,
+    env: Env,
+    _info: MessageInfo,
+) -> Result<Response, ContractError> {
     let storage = deps.storage;
     check_if_expired(storage, env.clone())?;
 
     let config = CONFIG.load(storage)?;
     let receipt = config.receipt_contract;
-    
+
     let tokens: TokensResponse = deps
         .querier
         .query_wasm_smart(
@@ -121,14 +131,21 @@ pub fn execute_redeem(deps:DepsMut,env: Env, _info: MessageInfo) -> Result<Respo
         .unwrap_or_else(|_| TokensResponse { tokens: vec![] });
 
     if tokens.tokens.is_empty() {
-            return Err(ContractError::NothingToRedeem { });
-    }else{
-
+        return Err(ContractError::NothingToRedeem {});
+    } else {
         let reached = check_if_goal_reached(storage)?;
-    
+
         if reached {
             // should be able to redeem perks
-        }else {
+            // if recipient => init balance vesting
+            if _info.sender == config.recipient {
+                // init cw_vesting of project token
+                
+
+            } else {
+                // init cw_vesting of project token
+            }
+        } else {
             // check that contracts has enough funds
             let denom = config.goal.denom;
             let contract_balance = deps.querier.query_balance(env.contract.address, &denom)?;
@@ -140,23 +157,28 @@ pub fn execute_redeem(deps:DepsMut,env: Env, _info: MessageInfo) -> Result<Respo
                 msg: to_binary(&msg)?,
             }
             .into();
-            let nft_info: NftInfoResponse<Metadata> = deps.querier.query(&query)?;  
-            
+            let nft_info: NftInfoResponse<Metadata> = deps.querier.query(&query)?;
+
             // sum up all user payments
-            let mut total_invested:Uint128= Uint128::zero();
+            let mut total_invested: Uint128 = Uint128::zero();
             for payment in nft_info.extension.payments {
                 total_invested += payment.amount;
             }
             if contract_balance.amount < total_invested {
-                return Err(ContractError::NotEnoughFunds { });
-            }else{
+                return Err(ContractError::NotEnoughFunds {});
+            } else {
                 // send funds to user
-                let send_msg = BankMsg::Send { to_address: _info.sender.to_string(), amount: vec![Coin{denom: denom, amount: total_invested}] } ;
+                let send_msg = BankMsg::Send {
+                    to_address: _info.sender.to_string(),
+                    amount: vec![Coin {
+                        denom,
+                        amount: total_invested,
+                    }],
+                };
                 return Ok(Response::new().add_message(send_msg));
             }
         }
     }
-    
 
     Ok(Response::default())
 }

@@ -10,6 +10,7 @@ pub struct Config {
     pub recipient: Addr,
     pub receipt_contract: String,
     pub factory_contract: Addr,
+    pub token_contract: String,
 }
 #[cw_serde]
 pub struct Collected {

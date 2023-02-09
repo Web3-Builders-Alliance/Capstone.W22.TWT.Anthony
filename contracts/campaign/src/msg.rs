@@ -1,7 +1,7 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::Coin;
 
-use crate::state::Config;
+use crate::state::{Collected, Config};
 
 #[cw_serde]
 pub struct InstantiateMsg {
@@ -22,19 +22,10 @@ pub enum ExecuteMsg {
 pub enum QueryMsg {
     #[returns(Config)]
     GetConfig {},
+
+    #[returns(Collected)]
+    GetCollected,
 }
 
 #[cw_serde]
 pub struct MigrateMsg {}
-
-// #[cw_serde]
-// pub enum Cw20HookMsg {
-//     Deposit { balance: Balance, sender: String },
-// }
-
-// // Adding default to the struct will allow us to use it in executes
-// #[cw_serde]
-// #[derive(Default)]
-// pub struct TokensResponse {
-//     pub tokens: Vec<String>
-// }

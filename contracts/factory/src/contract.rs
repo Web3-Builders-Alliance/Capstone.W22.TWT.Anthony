@@ -3,8 +3,9 @@ use crate::{
     execute::{execute_create_campaign, execute_update_config},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
     reply::{handle_campaign_creation_reply, CREATE_CAMPAIGN_REPLY_ID},
-    state::{Config, CONFIG},
+    state::{Config, CONFIG}, query::query_campaigns,
 };
+use cosmwasm_schema::serde::Serialize;
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
@@ -65,6 +66,7 @@ pub fn execute(
 pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
         QueryMsg::GetConfig {} => to_binary(&CONFIG.load(_deps.storage)?),
+        QueryMsg::GetCampaigns { start_after, limit } => to_binary(&query_campaigns(_deps, start_after, limit)?)
     }
 }
 
@@ -81,3 +83,4 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, C
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
     Ok(Response::default())
 }
+
