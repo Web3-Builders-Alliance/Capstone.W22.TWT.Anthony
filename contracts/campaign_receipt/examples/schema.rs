@@ -16,6 +16,6 @@ fn main() {
 
     export_schema(&schema_for!(InstantiateMsg), &out_dir);
     export_schema(&schema_for!(ExecuteMsg<Metadata>), &out_dir);
-    // export_schema(&schema_for!(Cw721QueryMsg<Metadata>), &out_dir);
+    export_schema(&schema_for!(Cw721QueryMsg<Metadata>), &out_dir);
 
 }

@@ -37,3 +37,57 @@ export interface InstantiateMsg {
   name: string;
   symbol: string;
 }
+export type QueryMsgForMetadata = {
+  owner_of: {
+    include_expired?: boolean | null;
+    token_id: string;
+  };
+} | {
+  approval: {
+    include_expired?: boolean | null;
+    spender: string;
+    token_id: string;
+  };
+} | {
+  approvals: {
+    include_expired?: boolean | null;
+    token_id: string;
+  };
+} | {
+  all_operators: {
+    include_expired?: boolean | null;
+    limit?: number | null;
+    owner: string;
+    start_after?: string | null;
+  };
+} | {
+  num_tokens: {};
+} | {
+  contract_info: {};
+} | {
+  nft_info: {
+    token_id: string;
+  };
+} | {
+  all_nft_info: {
+    include_expired?: boolean | null;
+    token_id: string;
+  };
+} | {
+  tokens: {
+    limit?: number | null;
+    owner: string;
+    start_after?: string | null;
+  };
+} | {
+  all_tokens: {
+    limit?: number | null;
+    start_after?: string | null;
+  };
+} | {
+  minter: {};
+} | {
+  extension: {
+    msg: Metadata;
+  };
+};

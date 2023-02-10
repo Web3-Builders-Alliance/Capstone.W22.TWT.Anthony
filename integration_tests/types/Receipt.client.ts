@@ -4,4 +4,4 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-import { ExecuteMsgForMetadata, Uint128, MintMsgForMetadata, Metadata, Payment, InstantiateMsg } from "./Receipt.types";
+import { ExecuteMsgForMetadata, Uint128, MintMsgForMetadata, Metadata, Payment, InstantiateMsg, QueryMsgForMetadata } from "./Receipt.types";
