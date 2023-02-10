@@ -62,7 +62,10 @@ pub fn instantiate(
             recipient: address_to,
             receipt_contract: "".to_string(), // will be set in the handle_instantiate_reply function
             factory_contract: info.sender.clone(),
-            token_contract: "".to_string(), // will be set in the handle_instantiate_reply function
+            token_contract: "".to_string(),
+            payroll_factory_contract: "".to_string(),
+            payroll_factory_code_id:msg.payroll_factory_code_id ,
+            vesting_code_id:msg.vesting_code_id 
         },
     )?;
 

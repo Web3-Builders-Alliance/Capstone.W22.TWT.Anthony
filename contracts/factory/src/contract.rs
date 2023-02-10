@@ -6,7 +6,7 @@ use crate::{
     reply::{handle_campaign_creation_reply, CREATE_CAMPAIGN_REPLY_ID},
     state::{Config, CONFIG},
 };
-use cosmwasm_schema::serde::Serialize;
+
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{

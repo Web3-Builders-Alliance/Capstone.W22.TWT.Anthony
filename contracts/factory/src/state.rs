@@ -1,12 +1,12 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Coin};
+use cosmwasm_std::Addr;
 use cw_storage_plus::{Item, Map};
 
 #[cw_serde]
 pub struct CodeIds {
-    pub campaign: u64,
     pub cw3: u64,
     pub cw20: u64,
+    pub campaign: u64,
     pub receipt: u64,
 }
 #[cw_serde]

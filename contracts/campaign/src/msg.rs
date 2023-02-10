@@ -9,6 +9,8 @@ pub struct InstantiateMsg {
     pub expiration: u64, // timestamp in seconds
     pub goal: Coin,
     pub recipient: String,
+    pub payroll_factory_code_id: u64,
+    pub vesting_code_id: u64,
 }
 
 #[cw_serde]
@@ -24,7 +26,7 @@ pub enum QueryMsg {
     GetConfig {},
 
     #[returns(Collected)]
-    GetCollected{},
+    GetCollected {},
 }
 
 #[cw_serde]

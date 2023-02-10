@@ -142,7 +142,28 @@ pub fn execute_redeem(
                 // init cw_vesting of project token
             } else {
                 // if campaign has cw20 => mint user's token => init cw_vesting
-                
+                if config.token_contract != "" {
+                    // init cw_vesting of user's token
+
+                    if config.payroll_factory_contract == "" {
+
+                        let payroll_factory_init_msg = cw_payroll_factory::msg::InstantiateMsg {
+                            owner: Some(env.contract.address.to_string()),
+                            vesting_code_id: config.vesting_code_id,
+                        };
+
+                        let init_payroll_msg = WasmMsg::Instantiate {
+                            admin: Some(env.contract.address.to_string()),
+                            code_id: config.payroll_factory_code_id,
+                            msg: to_binary(&payroll_factory_init_msg)?,
+                            funds: vec![],
+                            label: "payroll factory".to_string(),
+                        };
+                    }
+            
+
+                    
+                }
             }
         } else {
             // check that contracts has enough funds
