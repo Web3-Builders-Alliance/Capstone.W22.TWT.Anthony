@@ -1,6 +1,5 @@
-use cosmwasm_schema::{cw_serde, QueryResponses, serde::{self, Serialize}};
-use cosmwasm_std::{Addr, Coin, Uint256};
-use cw_utils::Expiration;
+use cosmwasm_schema::{cw_serde, QueryResponses};
+use cosmwasm_std::{Addr, Coin};
 
 use cw20_base::msg::InstantiateMsg as CW20InstantiateMsg;
 
@@ -42,7 +41,8 @@ pub enum QueryMsg {
     #[returns(CampaignsResponse)]
     GetCampaigns {
         start_after: Option<String>,
-        limit: Option<u32>,},
+        limit: Option<u32>,
+    },
 }
 
 #[cw_serde]
@@ -50,7 +50,7 @@ pub struct MigrateMsg {}
 
 #[cw_serde]
 pub struct CampaignsResponse {
-    pub campaigns: Vec<(String,String)>,
+    pub campaigns: Vec<(String, String)>,
 }
 
 #[cw_serde]

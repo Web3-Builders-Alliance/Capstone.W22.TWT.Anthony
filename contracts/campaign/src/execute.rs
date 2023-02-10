@@ -105,7 +105,7 @@ pub fn execute_deposit(
             .add_messages(msgs), // might not be executed in the right order ??
     )
 }
-// TODO implement balance payroll for recipient 
+// TODO implement balance payroll for recipient
 // TODO implement cw20 payroll for investors
 pub fn execute_redeem(
     deps: DepsMut,
@@ -140,8 +140,6 @@ pub fn execute_redeem(
             // if recipient => init balance vesting
             if _info.sender == config.recipient {
                 // init cw_vesting of project token
-                
-
             } else {
                 // init cw_vesting of project token
             }

@@ -6,7 +6,7 @@ use crate::{
     error::ContractError,
     msg::InstantiateCampaignMsg,
     reply::CREATE_CAMPAIGN_REPLY_ID,
-    state::{CodeIds, CONFIG, TEMP_CAMPAIGN_CREATOR, CAMPAIGNS},
+    state::{CodeIds, CAMPAIGNS, CONFIG, TEMP_CAMPAIGN_CREATOR},
 };
 
 /*
@@ -25,7 +25,7 @@ pub fn execute_create_campaign(
 ) -> Result<Response, ContractError> {
     // get campaign code_id
     let config = CONFIG.load(deps.storage)?;
-    
+
     let campaign = CAMPAIGNS.may_load(deps.storage, info.sender.to_string())?;
 
     // does this make sense, to limit campaign creation to 1 per creator?

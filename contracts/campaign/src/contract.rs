@@ -2,7 +2,10 @@ use crate::{
     error::ContractError,
     execute::{execute_deposit, execute_redeem},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
-    reply::{ INSTANTIATE_RECEIPT_REPLY_ID, INSTANTIATE_TOKEN_REPLY_ID, handle_instantiate_receipt_reply, handle_instantiate_token_reply},
+    reply::{
+        handle_instantiate_receipt_reply, handle_instantiate_token_reply,
+        INSTANTIATE_RECEIPT_REPLY_ID, INSTANTIATE_TOKEN_REPLY_ID,
+    },
     state::{Collected, Config, COLLECTED_AMOUNT, CONFIG},
 };
 #[cfg(not(feature = "library"))]
@@ -108,7 +111,8 @@ pub fn instantiate(
             gas_limit: None,
             id: INSTANTIATE_RECEIPT_REPLY_ID,
             reply_on: ReplyOn::Success,
-        }).add_submessage(SubMsg {
+        })
+        .add_submessage(SubMsg {
             // instantiate token
             msg: WasmMsg::Instantiate {
                 admin: Some(_env.contract.address.to_string()),
@@ -121,8 +125,7 @@ pub fn instantiate(
             gas_limit: None,
             id: INSTANTIATE_TOKEN_REPLY_ID,
             reply_on: ReplyOn::Success,
-        })
-    )
+        }))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -135,7 +138,6 @@ pub fn execute(
     match msg {
         ExecuteMsg::Deposit {} => execute_deposit(deps, env, info),
         ExecuteMsg::Redeem {} => execute_redeem(deps, env, info),
-        
     }
 }
 
