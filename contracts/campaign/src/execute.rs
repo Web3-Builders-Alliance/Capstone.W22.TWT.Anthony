@@ -141,7 +141,8 @@ pub fn execute_redeem(
             if _info.sender == config.recipient {
                 // init cw_vesting of project token
             } else {
-                // init cw_vesting of project token
+                // if campaign has cw20 => mint user's token => init cw_vesting
+                
             }
         } else {
             // check that contracts has enough funds

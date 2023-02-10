@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InstantiateMsg",
+  "type": "object",
+  "required": [
+    "code_ids"
+  ],
+  "properties": {
+    "admin": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "code_ids": {
+      "$ref": "#/definitions/CodeIds"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "CodeIds": {
+      "type": "object",
+      "required": [
+        "campaign",
+        "cw20",
+        "cw3",
+        "receipt"
+      ],
+      "properties": {
+        "campaign": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "cw20": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "cw3": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "receipt": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
