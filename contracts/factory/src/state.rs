@@ -19,5 +19,5 @@ pub const CONFIG: Item<Config> = Item::new("config");
 
 pub const TEMP_CAMPAIGN_CREATOR: Item<String> = Item::new("temp_campaign_creator");
 
-// we want to store campaigns as a map creator -> campaign
+// we want to store campaigns as a map creator -> campaigns
 pub const CAMPAIGNS: Map<String, String> = Map::new("campaigns");

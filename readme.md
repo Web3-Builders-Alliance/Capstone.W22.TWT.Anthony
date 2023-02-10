@@ -38,3 +38,20 @@ Vesting contract => cw_payroll?
 - campaign balance: will also be vested
 
 admin should be able to freeze/claw back if necessary
+
+<!-- TODOs -->
+
+- modify CAMPAIGN to accept multiple campaigns per creator
+
+<!-- compile contracts -->
+
+cargo clean
+cargo build
+workspace-optimizer
+
+<!-- TS testing -->
+
+.env file containing MNEMONIC var needed
+
+> npm i
+> npm run start will run ./main/ts

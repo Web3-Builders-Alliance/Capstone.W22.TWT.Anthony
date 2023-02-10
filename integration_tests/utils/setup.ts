@@ -41,6 +41,9 @@ export const createCampaign = async (lcd: LCDClient, sender: Wallet, factory_con
       create_campaign: initCampaignMsg,
     }),
   ]);
-  console.log(createCampaign);
-  return createCampaign;
+  const campaign_addr = createCampaign.logs[0].events[1].attributes[0].value;
+  const receipt_addr = createCampaign.logs[0].events[1].attributes[2].value;
+  const token_addr = createCampaign.logs[0].events[1].attributes[4].value;
+
+  return { campaign_addr, receipt_addr, token_addr };
 };

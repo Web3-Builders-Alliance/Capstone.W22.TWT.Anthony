@@ -16,10 +16,9 @@ pub fn query_campaigns(
     // fix start_after bound 
     // let  start_after = start_after.map(|s| s.to_string());
 
-    let campaigns: StdResult<Vec<String>> = CAMPAIGNS
+    let campaigns: StdResult<Vec<_>> = CAMPAIGNS
         .range(deps.storage, None, None,  cosmwasm_std::Order::Ascending)
         .take(limit)
-        .map(|item| item.map(|(k, _)| String::from_utf8(k.into()).unwrap()))
         .collect();
 
     let campaigns = campaigns?;

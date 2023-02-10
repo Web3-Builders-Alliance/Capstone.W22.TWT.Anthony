@@ -50,7 +50,7 @@ pub struct MigrateMsg {}
 
 #[cw_serde]
 pub struct CampaignsResponse {
-    pub campaigns: Vec<String>,
+    pub campaigns: Vec<(String,String)>,
 }
 
 #[cw_serde]
