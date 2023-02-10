@@ -24,7 +24,7 @@ pub enum QueryMsg {
     GetConfig {},
 
     #[returns(Collected)]
-    GetCollected,
+    GetCollected{},
 }
 
 #[cw_serde]

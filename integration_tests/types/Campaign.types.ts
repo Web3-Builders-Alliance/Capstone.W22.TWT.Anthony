@@ -21,6 +21,8 @@ export interface Coin {
   denom: string;
   [k: string]: unknown;
 }
-export type QueryMsg = "get_collected" | {
+export type QueryMsg = {
   get_config: {};
+} | {
+  get_collected: {};
 };

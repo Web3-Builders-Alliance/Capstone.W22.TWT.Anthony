@@ -2,14 +2,14 @@ import codegen from "@cosmwasm/ts-codegen";
 
 codegen({
   contracts: [
-    // {
-    //   name: "campaign",
-    //   dir: "./contracts/campaign/schema",
-    // },
-    // {
-    //   name: "factory",
-    //   dir: "./contracts/factory/schema",
-    // },
+    {
+      name: "campaign",
+      dir: "./contracts/campaign/schema",
+    },
+    {
+      name: "factory",
+      dir: "./contracts/factory/schema",
+    },
     {
       name: "receipt",
       dir: "./contracts/campaign_receipt/schema",
