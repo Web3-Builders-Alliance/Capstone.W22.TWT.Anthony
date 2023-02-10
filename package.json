@@ -4,11 +4,13 @@
   "description": "test wba contracts",
   "scripts": {
     "start": "TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true ts-node ./main.ts",
+    "codegen": "TS_NODE_FILES=true TS_NODE_TRANSPILE_ONLY=true ts-node ./scripts/codegen.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.28.4",
     "@cosmostation/cosmosjs": "^0.11.2",
+    "@cosmwasm/ts-codegen": "^0.24.0",
     "@terra-money/terra.js": "^3.1.0",
     "axios": "^0.25.0",
     "bignumber.js": "^9.0.2",
