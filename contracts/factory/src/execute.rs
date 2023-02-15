@@ -1,11 +1,11 @@
 use cosmwasm_std::{
-    to_binary, Addr, Coin, DepsMut, Env, MessageInfo, ReplyOn, Response, SubMsg, WasmMsg,
+    to_binary, Addr, Coin, DepsMut, Empty, Env, MessageInfo, ReplyOn, Response, SubMsg, WasmMsg,
 };
 
 use crate::{
     error::ContractError,
     msg::InstantiateCampaignMsg,
-    reply::CREATE_CAMPAIGN_REPLY_ID,
+    reply::{CREATE_CAMPAIGN_REPLY_ID, INIT_PAYROLL_FACTORY_REPLY_ID},
     state::{CodeIds, CAMPAIGNS, CONFIG, TEMP_CAMPAIGN_CREATOR},
 };
 
@@ -88,4 +88,39 @@ pub fn execute_update_config(
     CONFIG.save(deps.storage, &config)?;
 
     Ok(Response::new().add_attribute("method", "update_config"))
+}
+
+pub fn execute_create_payroll(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+) -> Result<Response, ContractError> {
+    let config = CONFIG.load(deps.storage)?;
+
+    if info.sender != config.admin {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    let payroll_factory_init_msg = cw_payroll_factory::msg::InstantiateMsg {
+        owner: Some(env.contract.address.to_string()),
+        vesting_code_id: config.code_ids.vesting,
+    };
+
+    let init_sub: SubMsg<Empty> = SubMsg {
+        msg: WasmMsg::Instantiate {
+            admin: Some(env.contract.address.to_string()),
+            code_id: config.code_ids.payroll_factory,
+            msg: to_binary(&payroll_factory_init_msg)?,
+            funds: vec![],
+            label: "campaign payroll".to_string(),
+        }
+        .into(),
+        gas_limit: None,
+        id: INIT_PAYROLL_FACTORY_REPLY_ID,
+        reply_on: ReplyOn::Success,
+    };
+
+    Ok(Response::new()
+        .add_attribute("method", "create_payroll")
+        .add_submessage(init_sub))
 }

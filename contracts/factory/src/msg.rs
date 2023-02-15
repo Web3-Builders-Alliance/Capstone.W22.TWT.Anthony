@@ -31,6 +31,7 @@ pub enum ExecuteMsg {
         admin: Option<Addr>,
         code_ids: CodeIds,
     },
+    CreatePayroll {},
 }
 
 #[cw_serde]
@@ -43,6 +44,8 @@ pub enum QueryMsg {
         start_after: Option<String>,
         limit: Option<u32>,
     },
+    #[returns(Addr)]
+    GetPayrollFactory {},
 }
 
 #[cw_serde]

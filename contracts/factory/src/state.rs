@@ -8,6 +8,8 @@ pub struct CodeIds {
     pub cw20: u64,
     pub campaign: u64,
     pub receipt: u64,
+    pub payroll_factory: u64,
+    pub vesting: u64,
 }
 #[cw_serde]
 pub struct Config {
@@ -18,6 +20,8 @@ pub struct Config {
 pub const CONFIG: Item<Config> = Item::new("config");
 
 pub const TEMP_CAMPAIGN_CREATOR: Item<String> = Item::new("temp_campaign_creator");
+
+pub const PAYROLL_FACTORY: Item<Addr> = Item::new("payroll_factory");
 
 // we want to store campaigns as a map creator -> campaigns
 pub const CAMPAIGNS: Map<String, String> = Map::new("campaigns");

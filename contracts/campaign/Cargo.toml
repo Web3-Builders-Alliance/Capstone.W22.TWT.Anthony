@@ -25,8 +25,13 @@ cw20-base= { workspace = true }
 cw721-base = { workspace = true, features = ["library"]}
 cw-storage-plus = { workspace = true }
 cw-utils = { workspace = true }
+cw-denom = { workspace = true }
+wynd-utils = { workspace = true }
 
 thiserror = { workspace = true }
+
 factory = {path="../factory", features = ["library"]}
 campaign_receipt = { path="../campaign_receipt"}
+
 cw-payroll-factory = {path="../external/cw_payroll_factory", features = ["library"]}
+cw-vesting = {path="../external/cw_vesting", features = ["library"]}

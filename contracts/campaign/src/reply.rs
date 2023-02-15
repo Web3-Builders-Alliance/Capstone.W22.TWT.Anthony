@@ -5,6 +5,7 @@ use crate::{error::ContractError, state::CONFIG};
 
 pub const INSTANTIATE_RECEIPT_REPLY_ID: u64 = 1;
 pub const INSTANTIATE_TOKEN_REPLY_ID: u64 = 2;
+pub const INIT_PAYROLL_FACTORY_REPLY_ID: u64 = 3;
 
 pub fn handle_instantiate_receipt_reply(
     _deps: DepsMut,

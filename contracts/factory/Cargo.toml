@@ -28,5 +28,6 @@ cw-storage-plus = { workspace = true }
 cw-utils = { workspace = true }
 
 thiserror = { workspace = true }
+cw-payroll-factory = {path="../external/cw_payroll_factory", features = ["library"]}
 
 # campaign = {path="../campaign", features = ["library"]}

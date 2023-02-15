@@ -1,10 +1,13 @@
 use crate::{
     error::ContractError,
-    execute::{execute_create_campaign, execute_update_config},
+    execute::{execute_create_campaign, execute_create_payroll, execute_update_config},
     msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg},
     query::query_campaigns,
-    reply::{handle_campaign_creation_reply, CREATE_CAMPAIGN_REPLY_ID},
-    state::{Config, CONFIG},
+    reply::{
+        handle_campaign_creation_reply, handle_payroll_factory_init_reply,
+        CREATE_CAMPAIGN_REPLY_ID, INIT_PAYROLL_FACTORY_REPLY_ID,
+    },
+    state::{Config, CONFIG, PAYROLL_FACTORY},
 };
 
 #[cfg(not(feature = "library"))]
@@ -60,6 +63,7 @@ pub fn execute(
         ExecuteMsg::UpdateConfig { admin, code_ids } => {
             execute_update_config(deps, _env, _info, admin, code_ids)
         }
+        ExecuteMsg::CreatePayroll {} => execute_create_payroll(deps, _env, _info),
     }
 }
 
@@ -70,6 +74,7 @@ pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
         QueryMsg::GetCampaigns { start_after, limit } => {
             to_binary(&query_campaigns(_deps, start_after, limit)?)
         }
+        QueryMsg::GetPayrollFactory {} => to_binary(&PAYROLL_FACTORY.load(_deps.storage)?),
     }
 }
 
@@ -77,6 +82,7 @@ pub fn query(_deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 pub fn reply(_deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
     match msg.id {
         CREATE_CAMPAIGN_REPLY_ID => handle_campaign_creation_reply(_deps, _env, msg),
+        INIT_PAYROLL_FACTORY_REPLY_ID => handle_payroll_factory_init_reply(_deps, _env, msg),
         _ => Err(ContractError::UnknownReplyID {}),
     }
 }

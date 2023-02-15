@@ -64,8 +64,8 @@ pub fn instantiate(
             factory_contract: info.sender.clone(),
             token_contract: "".to_string(),
             payroll_factory_contract: "".to_string(),
-            payroll_factory_code_id:msg.payroll_factory_code_id ,
-            vesting_code_id:msg.vesting_code_id 
+            payroll_factory_code_id: msg.payroll_factory_code_id,
+            vesting_code_id: msg.vesting_code_id,
         },
     )?;
 

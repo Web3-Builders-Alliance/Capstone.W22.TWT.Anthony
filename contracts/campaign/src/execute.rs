@@ -4,13 +4,22 @@ use cosmwasm_std::{
     to_binary, Attribute, BankMsg, Coin, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
     Uint128, WasmMsg, WasmQuery,
 };
+use cw20::Balance;
 use cw721::{Cw721QueryMsg, NftInfoResponse, TokensResponse};
+
+use cw_denom::UncheckedDenom;
+use cw_vesting::state::UncheckedVestingParams;
+use factory::msg::QueryMsg::GetPayrollFactory;
 
 use cw721_base::ExecuteMsg::Mint;
 use cw721_base::{MintMsg, QueryMsg};
 use cw_utils::must_pay;
 
+use cw_payroll_factory::msg::ExecuteMsg::InstantiateNativePayrollContract;
+use wynd_utils::Curve;
+
 use crate::helper::{check_if_expired, check_if_goal_reached};
+
 use crate::{
     error::ContractError,
     state::{Collected, COLLECTED_AMOUNT, CONFIG},
@@ -145,24 +154,15 @@ pub fn execute_redeem(
                 if config.token_contract != "" {
                     // init cw_vesting of user's token
 
-                    if config.payroll_factory_contract == "" {
-
-                        let payroll_factory_init_msg = cw_payroll_factory::msg::InstantiateMsg {
-                            owner: Some(env.contract.address.to_string()),
-                            vesting_code_id: config.vesting_code_id,
-                        };
-
-                        let init_payroll_msg = WasmMsg::Instantiate {
-                            admin: Some(env.contract.address.to_string()),
-                            code_id: config.payroll_factory_code_id,
-                            msg: to_binary(&payroll_factory_init_msg)?,
-                            funds: vec![],
-                            label: "payroll factory".to_string(),
-                        };
-                    }
-            
-
-                    
+                    // mint cw20 token
+                    let cw20_init_msg = WasmMsg::Execute {
+                        contract_addr: config.token_contract,
+                        msg: to_binary(&cw20_base::msg::ExecuteMsg::Mint {
+                            recipient: _info.sender.to_string(),
+                            amount: Uint128::from(1000000u128),
+                        })?,
+                        funds: vec![],
+                    };
                 }
             }
         } else {
@@ -199,6 +199,81 @@ pub fn execute_redeem(
             }
         }
     }
+
+    Ok(Response::default())
+}
+
+pub fn instantiate_vesting(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    balance: Balance,
+) -> Result<Response, ContractError> {
+    let config = CONFIG.load(deps.storage)?;
+
+    let payroll_factory = deps
+        .querier
+        .query_wasm_smart(config.payroll_factory_contract, &GetPayrollFactory {})?;
+
+    match balance {
+        Balance::Native(native) => {
+            // send NativeInstatiateMsg to payroll factory to initiate native vesting
+            let native_init_msg = WasmMsg::Execute {
+                contract_addr: payroll_factory,
+                msg: to_binary(&InstantiateNativePayrollContract {
+                    instantiate_msg: cw_vesting::msg::InstantiateMsg {
+                        owner: None,
+                        params: UncheckedVestingParams {
+                            recipient: info.sender.to_string(),
+                            amount: native.0[0].amount,
+                            denom: UncheckedDenom::Native(native.0[0].denom.clone()),
+                            // check Curve settings -> could make it configurable
+                            vesting_schedule: Curve::Constant {
+                                y: (Uint128::from(150u64)),
+                            },
+                            title: Some("vesting".to_string()),
+                            description: None,
+                        },
+                    },
+                    label: "vesting".to_string(),
+                })?,
+                funds: vec![],
+            };
+        }
+        Balance::Cw20(cw20) => {
+            // send amount of cw20 to payroll factory to initiate cw20 vesting
+            let cw20_send_msg = WasmMsg::Execute {
+                contract_addr: cw20.address.to_string(),
+                msg: to_binary(&cw20_base::msg::ExecuteMsg::Send {
+                    contract: payroll_factory,
+                    amount: cw20.amount,
+                    msg: to_binary(
+                        &cw_payroll_factory::msg::ReceiveMsg::InstantiatePayrollContract {
+                            instantiate_msg: cw_vesting::msg::InstantiateMsg {
+                                owner: None,
+                                params: UncheckedVestingParams {
+                                    recipient: info.sender.to_string(),
+                                    amount: cw20.amount,
+                                    denom: UncheckedDenom::Cw20(cw20.address.to_string()),
+                                    // check Curve settings -> could make it configurable
+                                    vesting_schedule: Curve::Constant {
+                                        y: (Uint128::from(150u64)),
+                                    },
+                                    title: Some("vesting".to_string()),
+                                    description: None,
+                                },
+                            },
+                            label: "vesting".to_string(),
+                        },
+                    )?,
+                })?,
+                funds: vec![],
+            };
+        }
+    }
+    
+
+    
 
     Ok(Response::default())
 }
